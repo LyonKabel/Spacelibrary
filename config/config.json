@@ -2,8 +2,8 @@
   "development": {
     "username": "root",
     "password": null,
-    "database": "asl_project",
-    "host": "127.0.0.1",
+    "database": "wdv442_space_tracker",
+    "host": "wdv442-mysql",
     "dialect": "mysql"
   },
   "test": {
