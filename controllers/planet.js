@@ -1,71 +1,69 @@
+// controllers/planet.js
+
 const { Planet } = require('../models');
 
-// Show all resources
-const index = async (req, res) => {
+// GET /planets - List all planets
+exports.index = async (req, res) => {
   try {
     const planets = await Planet.findAll();
     res.status(200).json(planets);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch planets' });
+    res.status(500).json({ error: error.message });
   }
-}
+};
 
-// Show resource
-const show = async (req, res) => {
+// POST /planets - Create a new planet
+exports.create = async (req, res) => {
   try {
-    const planet = await Planet.findByPk(req.params.id);
-    if (planet) {
-      res.status(200).json(planet);
-    } else {
-      res.status(404).json({ error: 'Planet not found' });
+    const { name, size, description } = req.body;
+    const newPlanet = await Planet.create({ name, size, description });
+    res.status(201).json(newPlanet);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// GET /planets/:id - Get a single planet by ID
+exports.show = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const planet = await Planet.findByPk(id);
+    if (!planet) {
+      return res.status(404).json({ error: 'Planet not found' });
     }
+    res.status(200).json(planet);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch planet' });
+    res.status(500).json({ error: error.message });
   }
-}
+};
 
-// Create a new resource
-const create = async (req, res) => {
+// PUT /planets/:id - Update a planet by ID
+exports.update = async (req, res) => {
   try {
-    const planet = await Planet.create(req.body);
-    res.status(201).json(planet);
-  } catch (error) {
-    res.status(400).json({ error: 'Failed to create planet' });
-  }
-}
-
-// Update an existing resource
-const update = async (req, res) => {
-  try {
-    const [updated] = await Planet.update(req.body, {
-      where: { id: req.params.id }
-    });
-    if (updated) {
-      const updatedPlanet = await Planet.findByPk(req.params.id);
-      res.status(200).json(updatedPlanet);
-    } else {
-      res.status(404).json({ error: 'Planet not found' });
+    const { id } = req.params;
+    const { name, size, description } = req.body;
+    const planet = await Planet.findByPk(id);
+    if (!planet) {
+      return res.status(404).json({ error: 'Planet not found' });
     }
+    await planet.update({ name, size, description });
+    res.status(200).json(planet);
   } catch (error) {
-    res.status(400).json({ error: 'Failed to update planet' });
+    res.status(500).json({ error: error.message });
   }
-}
+};
 
-// Remove a single resource
-const remove = async (req, res) => {
+// DELETE /planets/:id - Delete a planet by ID
+exports.remove = async (req, res) => {
   try {
-    const deleted = await Planet.destroy({
-      where: { id: req.params.id }
-    });
-    if (deleted) {
-      res.status(204).json({ success: true });
-    } else {
-      res.status(404).json({ error: 'Planet not found' });
+    const { id } = req.params;
+    const planet = await Planet.findByPk(id);
+    if (!planet) {
+      return res.status(404).json({ error: 'Planet not found' });
     }
+    await planet.destroy();
+    res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete planet' });
+    res.status(500).json({ error: error.message });
   }
-}
-
-// Export all controller actions
-module.exports = { index, show, create, update, remove }
+};

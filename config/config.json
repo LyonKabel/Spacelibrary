@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "root",
-    "password": null,
+    "password": "root",
     "database": "wdv442_space_tracker",
     "host": "wdv442-mysql",
     "dialect": "mysql"

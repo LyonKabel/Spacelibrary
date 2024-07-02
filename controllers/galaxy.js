@@ -1,71 +1,69 @@
+// controllers/galaxy.js
+
 const { Galaxy } = require('../models');
 
-// Show all resources
-const index = async (req, res) => {
+// GET /galaxies - List all galaxies
+exports.index = async (req, res) => {
   try {
     const galaxies = await Galaxy.findAll();
     res.status(200).json(galaxies);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch galaxies' });
+    res.status(500).json({ error: error.message });
   }
-}
+};
 
-// Show resource
-const show = async (req, res) => {
+// POST /galaxies - Create a new galaxy
+exports.create = async (req, res) => {
   try {
-    const galaxy = await Galaxy.findByPk(req.params.id);
-    if (galaxy) {
-      res.status(200).json(galaxy);
-    } else {
-      res.status(404).json({ error: 'Galaxy not found' });
+    const { name, size, description } = req.body;
+    const newGalaxy = await Galaxy.create({ name, size, description });
+    res.status(201).json(newGalaxy);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// GET /galaxies/:id - Get a single galaxy by ID
+exports.show = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const galaxy = await Galaxy.findByPk(id);
+    if (!galaxy) {
+      return res.status(404).json({ error: 'Galaxy not found' });
     }
+    res.status(200).json(galaxy);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch galaxy' });
+    res.status(500).json({ error: error.message });
   }
-}
+};
 
-// Create a new resource
-const create = async (req, res) => {
+// PUT /galaxies/:id - Update a galaxy by ID
+exports.update = async (req, res) => {
   try {
-    const galaxy = await Galaxy.create(req.body);
-    res.status(201).json(galaxy);
-  } catch (error) {
-    res.status(400).json({ error: 'Failed to create galaxy' });
-  }
-}
-
-// Update an existing resource
-const update = async (req, res) => {
-  try {
-    const [updated] = await Galaxy.update(req.body, {
-      where: { id: req.params.id }
-    });
-    if (updated) {
-      const updatedGalaxy = await Galaxy.findByPk(req.params.id);
-      res.status(200).json(updatedGalaxy);
-    } else {
-      res.status(404).json({ error: 'Galaxy not found' });
+    const { id } = req.params;
+    const { name, size, description } = req.body;
+    const galaxy = await Galaxy.findByPk(id);
+    if (!galaxy) {
+      return res.status(404).json({ error: 'Galaxy not found' });
     }
+    await galaxy.update({ name, size, description });
+    res.status(200).json(galaxy);
   } catch (error) {
-    res.status(400).json({ error: 'Failed to update galaxy' });
+    res.status(500).json({ error: error.message });
   }
-}
+};
 
-// Remove a single resource
-const remove = async (req, res) => {
+// DELETE /galaxies/:id - Delete a galaxy by ID
+exports.remove = async (req, res) => {
   try {
-    const deleted = await Galaxy.destroy({
-      where: { id: req.params.id }
-    });
-    if (deleted) {
-      res.status(204).json({ success: true });
-    } else {
-      res.status(404).json({ error: 'Galaxy not found' });
+    const { id } = req.params;
+    const galaxy = await Galaxy.findByPk(id);
+    if (!galaxy) {
+      return res.status(404).json({ error: 'Galaxy not found' });
     }
+    await galaxy.destroy();
+    res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete galaxy' });
+    res.status(500).json({ error: error.message });
   }
-}
-
-// Export all controller actions
-module.exports = { index, show, create, update, remove }
+};

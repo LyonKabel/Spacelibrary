@@ -1,8 +1,10 @@
 // Load in our Express framework
-const express       = require(`express`)
-
+const express = require(`express`)
+const bodyParser = require('body-parser');
 // Create a new Express instance called "app"
-const app           = express()
+const app = express()
+
+app.use(express.json());
 
 // Load in our RESTful routers
 const routers = require('./routers/index.js')

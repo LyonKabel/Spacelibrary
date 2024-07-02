@@ -1,71 +1,69 @@
+// controllers/star.js
+
 const { Star } = require('../models');
 
-// Show all resources
-const index = async (req, res) => {
+// GET /stars - List all stars
+exports.index = async (req, res) => {
   try {
     const stars = await Star.findAll();
     res.status(200).json(stars);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch stars' });
+    res.status(500).json({ error: error.message });
   }
-}
+};
 
-// Show resource
-const show = async (req, res) => {
+// POST /stars - Create a new star
+exports.create = async (req, res) => {
   try {
-    const star = await Star.findByPk(req.params.id);
-    if (star) {
-      res.status(200).json(star);
-    } else {
-      res.status(404).json({ error: 'Star not found' });
+    const { name, size, description } = req.body;
+    const newStar = await Star.create({ name, size, description });
+    res.status(201).json(newStar);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// GET /stars/:id - Get a single star by ID
+exports.show = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const star = await Star.findByPk(id);
+    if (!star) {
+      return res.status(404).json({ error: 'Star not found' });
     }
+    res.status(200).json(star);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch star' });
+    res.status(500).json({ error: error.message });
   }
-}
+};
 
-// Create a new resource
-const create = async (req, res) => {
+// PUT /stars/:id - Update a star by ID
+exports.update = async (req, res) => {
   try {
-    const star = await Star.create(req.body);
-    res.status(201).json(star);
-  } catch (error) {
-    res.status(400).json({ error: 'Failed to create star' });
-  }
-}
-
-// Update an existing resource
-const update = async (req, res) => {
-  try {
-    const [updated] = await Star.update(req.body, {
-      where: { id: req.params.id }
-    });
-    if (updated) {
-      const updatedStar = await Star.findByPk(req.params.id);
-      res.status(200).json(updatedStar);
-    } else {
-      res.status(404).json({ error: 'Star not found' });
+    const { id } = req.params;
+    const { name, size, description } = req.body;
+    const star = await Star.findByPk(id);
+    if (!star) {
+      return res.status(404).json({ error: 'Star not found' });
     }
+    await star.update({ name, size, description });
+    res.status(200).json(star);
   } catch (error) {
-    res.status(400).json({ error: 'Failed to update star' });
+    res.status(500).json({ error: error.message });
   }
-}
+};
 
-// Remove a single resource
-const remove = async (req, res) => {
+// DELETE /stars/:id - Delete a star by ID
+exports.remove = async (req, res) => {
   try {
-    const deleted = await Star.destroy({
-      where: { id: req.params.id }
-    });
-    if (deleted) {
-      res.status(204).json({ success: true });
-    } else {
-      res.status(404).json({ error: 'Star not found' });
+    const { id } = req.params;
+    const star = await Star.findByPk(id);
+    if (!star) {
+      return res.status(404).json({ error: 'Star not found' });
     }
+    await star.destroy();
+    res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete star' });
+    res.status(500).json({ error: error.message });
   }
-}
-
-// Export all controller actions
-module.exports = { index, show, create, update, remove }
+};
