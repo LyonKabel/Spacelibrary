@@ -1,12 +1,14 @@
-// controllers/star.js
-
 const { Star } = require('../models');
 
 // GET /stars - List all stars
 exports.index = async (req, res) => {
   try {
     const stars = await Star.findAll();
-    res.status(200).json(stars);
+    if (res.locals.isBrowser) {
+      res.status(200).render('views/Star/index.html.twig', { stars });
+    } else {
+      res.status(200).json(stars);
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -23,6 +25,20 @@ exports.create = async (req, res) => {
   }
 };
 
+// GET /stars/form/:id - Render star form (new or edit)
+exports.form = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let star = new Star();
+    if (id !== 'undefined') {
+      star = await Star.findByPk(id);
+    }
+    res.status(200).render(`views/Star/${star.id ? 'edit' : 'new'}.html.twig`, { star });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // GET /stars/:id - Get a single star by ID
 exports.show = async (req, res) => {
   try {
@@ -31,7 +47,11 @@ exports.show = async (req, res) => {
     if (!star) {
       return res.status(404).json({ error: 'Star not found' });
     }
-    res.status(200).json(star);
+    if (res.locals.isBrowser) {
+      res.status(200).render('views/Star/show.html.twig', { star });
+    } else {
+      res.status(200).json(star);
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -43,9 +63,11 @@ exports.update = async (req, res) => {
     const { id } = req.params;
     const { name, size, description } = req.body;
     const star = await Star.findByPk(id);
+    
     if (!star) {
       return res.status(404).json({ error: 'Star not found' });
     }
+    
     await star.update({ name, size, description });
     res.status(200).json(star);
   } catch (error) {

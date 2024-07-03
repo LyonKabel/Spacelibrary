@@ -1,6 +1,8 @@
 // Load in Express framework
 const express = require(`express`)
 
+const { checkAccept} = require('../middlewares/api.js')
+
 // Load in our controller/action instances
 const starCtlr = require(`../controllers/star.js`)
 
@@ -8,11 +10,14 @@ const starCtlr = require(`../controllers/star.js`)
 const router = new express.Router()
 
 // RESTful resource mappings
-router.get(`/`, starCtlr.index)
-router.post(`/`, starCtlr.create)
-router.get(`/:id`, starCtlr.show) 
-router.put(`/:id`, starCtlr.update) 
-router.delete(`/:id`, starCtlr.remove) 
+router.get(`/:id/edit`, starCtlr.form)
+router.get(`/new`, starCtlr.form)
+router.get(`/`, checkAccept, starCtlr.index)
+router.post(`/`, checkAccept, starCtlr.create)
+router.post(`/:id`, checkAccept, starCtlr.create)
+router.get(`/:id`, checkAccept, starCtlr.show) 
+router.put(`/:id`, checkAccept, starCtlr.update) 
+router.delete(`/:id`, checkAccept, starCtlr.remove) 
 
 // export "router"
 module.exports = router

@@ -1,0 +1,9 @@
+{% extends "layouts/base.html.twig" %}
+{% block title %}Edit {{ galaxy.name }}{% endblock %}
+{% block app %}
+
+    <h1>Editing {{ galaxy.name }}: </h1>
+
+    {% include "views/Galaxy/_form.html.twig" with { 'galaxy': galaxy } %}
+
+{% endblock %}

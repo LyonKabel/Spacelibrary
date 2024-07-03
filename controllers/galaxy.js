@@ -1,12 +1,14 @@
-// controllers/galaxy.js
-
 const { Galaxy } = require('../models');
 
 // GET /galaxies - List all galaxies
 exports.index = async (req, res) => {
   try {
     const galaxies = await Galaxy.findAll();
-    res.status(200).json(galaxies);
+    if (res.locals.isBrowser) {
+      res.status(200).render('views/Galaxy/index.html.twig', { galaxies });
+    } else {
+      res.status(200).json(galaxies);
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -23,6 +25,20 @@ exports.create = async (req, res) => {
   }
 };
 
+// GET /galaxies/form/:id - Render galaxy form (new or edit)
+exports.form = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let galaxy = new Galaxy();
+    if (id !== 'undefined') {
+      galaxy = await Galaxy.findByPk(id);
+    }
+    res.status(200).render(`views/Galaxy/${galaxy.id ? 'edit' : 'new'}.html.twig`, { galaxy });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // GET /galaxies/:id - Get a single galaxy by ID
 exports.show = async (req, res) => {
   try {
@@ -31,7 +47,11 @@ exports.show = async (req, res) => {
     if (!galaxy) {
       return res.status(404).json({ error: 'Galaxy not found' });
     }
-    res.status(200).json(galaxy);
+    if (res.locals.isBrowser) {
+      res.status(200).render('views/Galaxy/show.html.twig', { galaxy });
+    } else {
+      res.status(200).json(galaxy);
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -43,9 +63,11 @@ exports.update = async (req, res) => {
     const { id } = req.params;
     const { name, size, description } = req.body;
     const galaxy = await Galaxy.findByPk(id);
+    
     if (!galaxy) {
       return res.status(404).json({ error: 'Galaxy not found' });
     }
+    
     await galaxy.update({ name, size, description });
     res.status(200).json(galaxy);
   } catch (error) {

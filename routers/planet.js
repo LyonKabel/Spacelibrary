@@ -1,6 +1,6 @@
 // Load in Express framework
 const express = require(`express`)
-
+const { checkAccept} = require('../middlewares/api.js')
 // Load in our controller/action instances
 const planetCtlr = require(`../controllers/planet.js`)
 
@@ -8,11 +8,15 @@ const planetCtlr = require(`../controllers/planet.js`)
 const router = new express.Router()
 
 // RESTful resource mappings
-router.get(`/`, planetCtlr.index)
-router.post(`/`, planetCtlr.create)
-router.get(`/:id`, planetCtlr.show) 
-router.put(`/:id`, planetCtlr.update) 
-router.delete(`/:id`, planetCtlr.remove) 
+router.get(`/:id/edit`, planetCtlr.form)
+router.get(`/new`, planetCtlr.form)
+router.get(`/`, checkAccept, planetCtlr.index)
+router.post(`/`, checkAccept, planetCtlr.create)
+router.post(`/:id`, checkAccept, planetCtlr.create)
+router.get(`/:id`, checkAccept, planetCtlr.show) 
+router.put(`/:id`, checkAccept, planetCtlr.update) 
+router.delete(`/:id`, checkAccept, planetCtlr.remove) 
+
 
 // export "router"
 module.exports = router

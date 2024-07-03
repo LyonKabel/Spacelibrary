@@ -1,0 +1,32 @@
+<html>
+<head>
+    <title>{% block title %}My Website - ASL Week 4{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <nav id="primary-nav">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/galaxies">Galaxies</a></li>
+                <li><a href="/planets">Planets</a></li>
+                <li><a href="/stars">Stars</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="app">
+        {% block app %}{% endblock %}
+    </main>
+
+    <footer>
+        <nav id="primary-footer-nav">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/galaxies">Galaxies</a></li>
+                <li><a href="/planets">Planets</a></li>
+                <li><a href="/stars">Stars</a></li>
+            </ul>
+        </nav>
+    </footer>
+</body>
+</html>

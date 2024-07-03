@@ -1,0 +1,30 @@
+{% if planet is defined and planet.id > 0 %}
+    <form method="POST" action="/planets/{{ planet.id }}">
+    <input type="hidden" name="id" value="{{ planet.id }}" />
+{% else %}
+    <form method="POST" action="/planets">
+{% endif %}
+
+<div>
+    <label>Planet Name: </label>
+    <input type="text" 
+           name="name" 
+           {% if planet is defined and planet.name %}value="{{ planet.name }}" {% endif %} />
+</div>
+
+<div>
+    <label>Planet Size: </label>
+    <input type="number" 
+           name="size" 
+           {% if planet is defined and planet.size %}value="{{ planet.size }}" {% endif %} />
+</div>
+
+<div>
+    <label>Planet Description: </label>
+    <input type="text" 
+           name="description" 
+           {% if planet is defined and planet.description %}value="{{ planet.description }}" {% endif %} />
+</div>
+
+<button type="submit">Save Planet</button>
+</form>

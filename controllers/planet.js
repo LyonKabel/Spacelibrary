@@ -1,12 +1,14 @@
-// controllers/planet.js
-
 const { Planet } = require('../models');
 
 // GET /planets - List all planets
 exports.index = async (req, res) => {
   try {
     const planets = await Planet.findAll();
-    res.status(200).json(planets);
+    if (res.locals.isBrowser) {
+      res.status(200).render('views/Planet/index.html.twig', { planets });
+    } else {
+      res.status(200).json(planets);
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -23,6 +25,20 @@ exports.create = async (req, res) => {
   }
 };
 
+// GET /planets/form/:id - Render planet form (new or edit)
+exports.form = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let planet = new Planet();
+    if (id !== 'undefined') {
+      planet = await Planet.findByPk(id);
+    }
+    res.status(200).render(`views/Planet/${planet.id ? 'edit' : 'new'}.html.twig`, { planet });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // GET /planets/:id - Get a single planet by ID
 exports.show = async (req, res) => {
   try {
@@ -31,7 +47,11 @@ exports.show = async (req, res) => {
     if (!planet) {
       return res.status(404).json({ error: 'Planet not found' });
     }
-    res.status(200).json(planet);
+    if (res.locals.isBrowser) {
+      res.status(200).render('views/Planet/show.html.twig', { planet });
+    } else {
+      res.status(200).json(planet);
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -49,7 +69,7 @@ exports.update = async (req, res) => {
     await planet.update({ name, size, description });
     res.status(200).json(planet);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status500().json({ error: error.message });
   }
 };
 

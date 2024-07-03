@@ -1,0 +1,9 @@
+{% extends "layouts/base.html.twig" %}
+{% block title %}Create new star {{ star.name }}{% endblock %}
+{% block app %}
+
+    <h1>Create a new star: </h1>
+
+    {% include "views/Star/_form.html.twig" %}
+
+{% endblock %}

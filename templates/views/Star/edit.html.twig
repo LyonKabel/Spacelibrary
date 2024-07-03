@@ -1,0 +1,9 @@
+{% extends "layouts/base.html.twig" %}
+{% block title %}Edit {{ star.name }}{% endblock %}
+{% block app %}
+
+    <h1>Editing {{ star.name }}: </h1>
+
+    {% include "views/Star/_form.html.twig" with { 'star': star} %}
+
+{% endblock %}

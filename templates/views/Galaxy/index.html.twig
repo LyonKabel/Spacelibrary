@@ -1,0 +1,91 @@
+{% extends "layouts/base.html.twig" %}
+{% block title %}View all galaxies{% endblock %}
+{% block app %}
+
+<h1>Viewing all galaxies: </h1>
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+    a {
+        color: #3498db;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for galaxy in galaxies %}
+        <tr>
+            <td>{{ galaxy.id }}</td>
+            <td>{{ galaxy.name }}</td>
+            <td>{{ galaxy.description }}</td>
+            <td>
+                <a href="#" class="delete-galaxy" data-id="{{ galaxy.id }}">Delete</a>
+                <a href="/galaxies/{{ galaxy.id }}/edit">Edit</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const deleteLinks = document.querySelectorAll('.delete-galaxy');
+    deleteLinks.forEach(link => {
+        link.addEventListener('click', async (event) => {
+            event.preventDefault();
+            const galaxyId = link.getAttribute('data-id');
+            const confirmed = confirm(`Are you sure you want to delete galaxy ID ${galaxyId}?`);
+            if (confirmed) {
+                try {
+                    const response = await fetch(`/galaxies/${galaxyId}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        // Refresh the page or update the list after deletion
+                        window.location.reload();
+                    } else {
+                        const data = await response.json();
+                        alert(`Failed to delete galaxy: ${data.error}`);
+                    }
+                } catch (error) {
+                    console.error('Error deleting galaxy:', error);
+                    alert('An unexpected error occurred while deleting the galaxy.');
+                }
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

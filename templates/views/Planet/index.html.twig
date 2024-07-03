@@ -1,0 +1,91 @@
+{% extends "layouts/base.html.twig" %}
+{% block title %}View all planets{% endblock %}
+{% block app %}
+
+<h1>Viewing all planets: </h1>
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+    a {
+        color: #3498db;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for planet in planets %}
+        <tr>
+            <td>{{ planet.id }}</td>
+            <td>{{ planet.name }}</td>
+            <td>{{ planet.description }}</td>
+            <td>
+                <a href="#" class="delete-planet" data-id="{{ planet.id }}">Delete</a>
+                <a href="/planets/{{ planet.id }}/edit">Edit</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const deleteLinks = document.querySelectorAll('.delete-planet');
+    deleteLinks.forEach(link => {
+        link.addEventListener('click', async (event) => {
+            event.preventDefault();
+            const planetId = link.getAttribute('data-id');
+            const confirmed = confirm(`Are you sure you want to delete planet ID ${planetId}?`);
+            if (confirmed) {
+                try {
+                    const response = await fetch(`/planets/${planetId}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        // Refresh the page or update the list after deletion
+                        window.location.reload();
+                    } else {
+                        const data = await response.json();
+                        alert(`Failed to delete planet: ${data.error}`);
+                    }
+                } catch (error) {
+                    console.error('Error deleting planet:', error);
+                    alert('An unexpected error occurred while deleting the planet.');
+                }
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}
